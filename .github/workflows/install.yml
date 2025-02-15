@@ -1,0 +1,28 @@
+name: Deploy website to webserver
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        server_ip:
+          - 44.32.132.100
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.WWW_DEPLOY_SSH_KEY }}
+
+      - name: Deploy Website
+        run: |
+          ssh -o StrictHostKeyChecking=no gh-deploy@${{ matrix.server_ip }} /opt/gh-deploy
